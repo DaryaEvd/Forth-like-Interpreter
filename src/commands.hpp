@@ -24,7 +24,7 @@ public:
 // the result on the top
 class Add : public Command {
 public:
-  void apply(Context &cont) {
+  void apply(Context &cont) override {
     if (cont.stackCntxt.size() < 2) {
       throw InterpreterError("Too few arguments on stack");
     }
@@ -38,6 +38,15 @@ public:
     cont.stackCntxt.push(sum);
   }
 };
+
+//class BinaryOp: public Command {
+//    void apply(Context &cont) override {
+//      this(first, second);
+//    }
+//
+//    virtual int operator()(int a, int b) = 0;
+//
+//};
 
 // makes a subtraction of two top numbers, removes them from the stack and puts
 // the result on the top
@@ -162,9 +171,6 @@ public:
 class Rot : public Command {
 public:
   void apply(Context &cont) {
-    if (cont.stackCntxt.size() < 3) {
-      throw InterpreterError("Too few arguments on stack");
-    }
 
     int first = cont.stackCntxt.top();
     cont.stackCntxt.pop();

@@ -7,6 +7,7 @@
 #include "commands.hpp"
 #include "interpretererror.hpp"
 
+// CR : move implementation to separate file
 class Interpreter {
   public:
 
@@ -15,24 +16,30 @@ class Interpreter {
       return i;
     }
 
-    // bool registerCreator(const std::string &strCmd,
-    //                      std::unique_ptr<Command> && cmd) {
-    bool registerCreator(const std::string &strCmd, Command *cmd) {
+    bool registerCreator(std::string && strCmd,
+                         std::unique_ptr<Command> && cmd) {
+      // CR: assert that we do not have this command already
       creatorsCmds_[strCmd] = std::move(cmd);
       return true;
     }
 
     std::string Interpret(Context &cont) {
-      const std::string::iterator begin = cont.inputStr.begin();
-      const std::string::iterator end = cont.inputStr.end();
+      std::string &input = cont.inputStr;
+      const std::string::iterator begin = input.begin();
+      const std::string::iterator end = input.end();
+      std::stringstream out;
+//      MyStack ms;
+//      Context ctx { input, out, ms };
       auto it = begin;
       try {
         while (it != end) {
           auto isSpaceCheck = [](char i) { return std::isspace(i); };
+          // CR: skip spaces
           std::string::iterator spaceIter =
               std::find_if(it, end, isSpaceCheck);
-          std::string strToCheck = std::move(std::string(it, spaceIter));
+          std::string strToCheck = std::string(it, spaceIter);
 
+          // CR: check if it + 1 == end
           if ((*it == '-' && std::isdigit(*(it + 1))) ||
               std::isdigit(*it)) {
 
@@ -45,22 +52,26 @@ class Interpreter {
             continue;
           }
 
-          else if (cont.inputStr.length() > 3 &&
-                  cont.inputStr[0] == '.' &&
-                  cont.inputStr[1] == '\"' &&
-                  std::isspace(cont.inputStr[2]) &&
-                  cont.inputStr[cont.inputStr.length() - 1] != '\"') {
+          // CR: ." hello" .
+          // CR: either input or iterator everywhere
+          else if (input.length() > 3 &&
+                   input[0] == '.' &&
+                   input[1] == '\"' &&
+                   std::isspace(input[2]) &&
+                   input[input.length() - 1] != '\"') {
             throw InterpreterError("No closing quote");
           }
 
-          else if (cont.inputStr.length() > 3 &&
-                  cont.inputStr[0] == '.' &&
-                  cont.inputStr[1] == '\"' &&
-                  std::isspace(cont.inputStr[2]) &&
-                  cont.inputStr[cont.inputStr.length() - 1] == '\"') {
+          // CR: merge
+          // CR: get_string(iterator str_start) -> std::string (string content)
+          else if (input.length() > 3 &&
+                   input[0] == '.' &&
+                   input[1] == '\"' &&
+                   std::isspace(input[2]) &&
+                   input[input.length() - 1] == '\"') {
 
-            cont.ssOutput << cont.inputStr.substr(
-                                3, cont.inputStr.length() - 4) << "\n";
+            cont.ssOutput << input.substr(
+                    3, input.length() - 4) << "\n";
             return cont.ssOutput.str();
           }
 
@@ -69,17 +80,8 @@ class Interpreter {
             if (commandIter == creatorsCmds_.end()) {
               throw InterpreterError("such command not found");
             }
-
-            Command *toApply = commandIter->second;
-            toApply->apply(cont);
+            (commandIter->second)->apply(cont);
             it = spaceIter;
-
-            // std::unique_ptr<Command> toApply = std::move(commandIter->second);
-            // // toApply->apply(cont);
-            // if(toApply != nullptr) {
-            //   toApply->apply(cont);
-            // }
-            // it = spaceIter;
           }
         }
 
@@ -99,7 +101,6 @@ class Interpreter {
     Interpreter(Interpreter &other) = delete;
     Interpreter &operator=(const Interpreter &other) = delete;
 
-    std::unordered_map<std::string, Command *> creatorsCmds_;
-    // std::unordered_map<std::string, std::unique_ptr<Command>>
-    //     creatorsCmds_;
+     std::unordered_map<std::string, std::unique_ptr<Command>>
+         creatorsCmds_;
 };

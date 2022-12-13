@@ -20,6 +20,7 @@ class MyStack{
       return mystk_.top();
     }
 
+    // CR: void -> int
     void pop() {
       if(mystk_.empty()){
         throw InterpreterError("Too few arguments on stack");

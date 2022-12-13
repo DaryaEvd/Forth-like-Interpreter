@@ -5,6 +5,6 @@
 
 class InterpreterError : public std::runtime_error {
   public:
-    InterpreterError(const std::string &msg)
+    explicit InterpreterError(const std::string &msg)
         : std::runtime_error(msg) {}
 };
