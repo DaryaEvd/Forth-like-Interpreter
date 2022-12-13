@@ -10,7 +10,7 @@ add_executable(src
         )
 
 add_executable(tests
-        src/testsForth.cpp
+        src/testsforth.cpp
         src/commands.cpp
         )
 
