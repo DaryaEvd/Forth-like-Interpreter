@@ -31,7 +31,7 @@ class Interpreter {
           auto isSpaceCheck = [](char i) { return std::isspace(i); };
           std::string::iterator spaceIter =
               std::find_if(it, end, isSpaceCheck);
-          std::string strToCheck = std::string(it, spaceIter);
+          std::string strToCheck = std::move(std::string(it, spaceIter));
 
           if ((*it == '-' && std::isdigit(*(it + 1))) ||
               std::isdigit(*it)) {
@@ -45,7 +45,7 @@ class Interpreter {
             continue;
           }
 
-          else if (cont.inputStr.length() > 2 &&
+          else if (cont.inputStr.length() > 3 &&
                   cont.inputStr[0] == '.' &&
                   cont.inputStr[1] == '\"' &&
                   std::isspace(cont.inputStr[2]) &&
@@ -75,7 +75,7 @@ class Interpreter {
             it = spaceIter;
 
             // std::unique_ptr<Command> toApply = std::move(commandIter->second);
-            // toApply->apply(cont);
+            // // toApply->apply(cont);
             // if(toApply != nullptr) {
             //   toApply->apply(cont);
             // }
