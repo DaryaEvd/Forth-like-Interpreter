@@ -1,9 +1,6 @@
-#pragma once
-
-#include <functional>
-#include <limits>
-#include <list>
-#include <sstream>
+#include <algorithm>
+#include <iostream>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -12,116 +9,97 @@
 
 class Interpreter {
   public:
-  typedef std::function<Command *(std::string::iterator &,
-                                  std::string::iterator &)>
-      creatorType;
 
-  static Interpreter &getInstance() {
-    static Interpreter i;
-    return i;
-  }
+    static Interpreter &GetInstance() {
+      static Interpreter i;
+      return i;
+    }
 
-  bool registerCreator(const std::string &comand,
-                       creatorType &creator) {
-    creators_[comand] = creator;
-    return true;
-  }
-
-  bool IsOverflowNumber(int number) {
-    if (number > INT32_MAX || number < INT32_MIN) {
+    // bool registerCreator(const std::string &strCmd,
+    //                      std::unique_ptr<Command> && cmd) {
+    bool registerCreator(const std::string &strCmd, Command *cmd) {
+      creatorsCmds_[strCmd] = std::move(cmd);
       return true;
     }
-    return false;
-  }
 
-  std::list<Command *> GetCommands(std::string::iterator &begin,
-                                   std::string::iterator &end) {
-    std::list<Command *> commands;
-    auto it = begin;
-    std::string strCommand = "";
-    for (it; it < end; it++) {
-      if (*it != ' ') {
-        if ((*it) != std::isdigit(*it)) {
-          strCommand += std::to_string(*it);
-        }
-      }
-      std::unordered_map<std::string, creatorType>::iterator
-          iterCreator = creators_.find(strCommand);
-      if (iterCreator == creators_.end()) {
-        std::stringstream ss;
-        ss << "no such command: '" << *it << "'";
-        throw interpreterError(ss.str());
-      }
-      creatorType creator = (*iterCreator).second;
-      Command *cmd = creator(it, end);
-      commands.push_back(cmd);
-    }
-    return commands;
-  }
+    std::string Interpret(Context &cont) {
+      const std::string::iterator begin = cont.inputStr.begin();
+      const std::string::iterator end = cont.inputStr.end();
+      auto it = begin;
+      try {
+        while (it != end) {
+          auto isSpaceCheck = [](char i) { return std::isspace(i); };
+          std::string::iterator spaceIter =
+              std::find_if(it, end, isSpaceCheck);
+          std::string strToCheck = std::string(it, spaceIter);
 
-  void Interpret(std::string expression_) {
-    auto begin = expression_.begin();
-    auto end = expression_.end();
+          if ((*it == '-' && std::isdigit(*(it + 1))) ||
+              std::isdigit(*it)) {
 
-    auto it = begin;
-    while (it != end) {
-
-      if ((std::isdigit(*it)) || (*it == '-' && std::isdigit(*(it + 1)))) {
-        std::string strToConvertToNum = "";
-        while (*it != ' ') {
-          strToConvertToNum += (std::to_string(*it));
-          it++;
-        }
-        int number = (std::stoi(strToConvertToNum));
-        if (IsOverflowNumber(number)) {
-          throw interpreterError("number is overflow max int");
-        }
-        stack_.push(number);
-      }
-
-      if (*it == '-') {
-        if (std::isdigit(*(it + 1))) {
-          continue;
-        }
-
-      }
-
-      else if (*it == '.' && (*(it + 1) == '"') && (*(it + 2) == ' ')) {
-        it = it + 3;
-        std::string strContent = "";
-        while (*it != '"') {
-          strContent += std::to_string(*it);
-          it++;
-        }
-        std::cout << "< " << strContent << std::endl;
-      }
-
-      else if (*it != ' ') {
-        continue;
-      }
-
-      else {
-        try {
-          std::list<Command *> commands = GetCommands(it, end);  
-          for (Command *cmd : commands) {
-            cmd->apply(stack_);
-            delete cmd;
+            cont.stackCntxt.push(std::stoi(strToCheck));
+            it = spaceIter;
           }
-        } catch (interpreterError &e) {
-          std::cerr << e.what() << std::endl;
+
+          else if (std::isspace(*it)) {
+            it++;
+            continue;
+          }
+
+          else if (cont.inputStr.length() > 2 &&
+                  cont.inputStr[0] == '.' &&
+                  cont.inputStr[1] == '\"' &&
+                  std::isspace(cont.inputStr[2]) &&
+                  cont.inputStr[cont.inputStr.length() - 1] != '\"') {
+            throw InterpreterError("No closing quote");
+          }
+
+          else if (cont.inputStr.length() > 3 &&
+                  cont.inputStr[0] == '.' &&
+                  cont.inputStr[1] == '\"' &&
+                  std::isspace(cont.inputStr[2]) &&
+                  cont.inputStr[cont.inputStr.length() - 1] == '\"') {
+
+            cont.ssOutput << cont.inputStr.substr(
+                                3, cont.inputStr.length() - 4) << "\n";
+            return cont.ssOutput.str();
+          }
+
+          else {
+            auto commandIter = creatorsCmds_.find(strToCheck);
+            if (commandIter == creatorsCmds_.end()) {
+              throw InterpreterError("such command not found");
+            }
+
+            Command *toApply = commandIter->second;
+            toApply->apply(cont);
+            it = spaceIter;
+
+            // std::unique_ptr<Command> toApply = std::move(commandIter->second);
+            // toApply->apply(cont);
+            // if(toApply != nullptr) {
+            //   toApply->apply(cont);
+            // }
+            // it = spaceIter;
+          }
         }
+
+      } catch (InterpreterError &e) {
+        cont.ssOutput << e.what() << "\n";
+        return cont.ssOutput.str();
       }
+
+      if (cont.ssOutput.str().empty()) {
+        cont.ssOutput << "< ok\n";
+      }
+      return cont.ssOutput.str();
     }
-  }
 
   private:
-  Interpreter() = default;
-  // ~Interpreter() = delete; //???
-  Interpreter(Interpreter &other) = delete;
-  Interpreter &operator=(const Interpreter &other) = delete;
+    Interpreter() = default;
+    Interpreter(Interpreter &other) = delete;
+    Interpreter &operator=(const Interpreter &other) = delete;
 
-  std::unordered_map<std::string, creatorType> creators_;
-  MyStack stack_;
-
-  std::string expression_;
+    std::unordered_map<std::string, Command *> creatorsCmds_;
+    // std::unordered_map<std::string, std::unique_ptr<Command>>
+    //     creatorsCmds_;
 };

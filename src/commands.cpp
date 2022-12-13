@@ -1,109 +1,78 @@
+#include <memory>
+
 #include "commands.hpp"
 #include "interpreter.hpp"
 
 namespace {
 
-Command *AddCreator(std::string::iterator &it,
-                    const std::string::iterator &end) {
-  return new Add();
-}
-bool addCmd =
-    Interpreter::getInstance().registerCreator("+", AddCreator);
+//   bool addCmd = Interpreter::GetInstance().registerCreator(
+//       "+", std::make_unique<Add>());
+//   bool subCmd = Interpreter::GetInstance().registerCreator(
+//       "-", std::make_unique<Sub>());
+//   bool multCmd = Interpreter::GetInstance().registerCreator(
+//       "*", std::make_unique<Mult>());
+//   bool writeCmd =
+//       Interpreter::GetInstance().registerCreator(".",
+//       std::make_unique<Write>());
 
-Command *SubCreator(std::string::iterator &it,
-                    const std::string::iterator &end) {
-  return new Sub();
-}
-bool subCmd =
-    Interpreter::getInstance().registerCreator("-", SubCreator);
+  Command *AddCreator() { return new Add(); }
+  bool addCmd =
+      Interpreter::GetInstance().registerCreator("+", AddCreator());
 
-Command *MulCreator(std::string::iterator &it,
-                    const std::string::iterator &end) {
-  return new Mul();
-}
-bool mulCmd =
-    Interpreter::getInstance().registerCreator("*", MulCreator);
+  Command *SubCreator() { return new Sub(); }
+  bool subCmd =
+      Interpreter::GetInstance().registerCreator("-", SubCreator());
 
-Command *DivCreator(std::string::iterator &it,
-                    const std::string::iterator &end) {
-  return new Div();
-}
-bool divCmd =
-    Interpreter::getInstance().registerCreator("/", DivCreator);
+  Command *MultCreator() { return (new Mult()); }
+  bool multCmd =
+      Interpreter::GetInstance().registerCreator("*", MultCreator());
 
-Command *ModCreator(std::string::iterator &it,
-                    const std::string::iterator &end) {
-  return new Mod();
-}
-bool modCmd =
-    Interpreter::getInstance().registerCreator("mod", DivCreator);
+  Command *DivCreator() { return (new Div()); }
+  bool divCmd =
+      Interpreter::GetInstance().registerCreator("/", DivCreator());
 
-Command *DropCreator(std::string::iterator &it,
-                     const std::string::iterator &end) {
-  return new Drop();
-}
-bool dropCmd =
-    Interpreter::getInstance().registerCreator("drop", DropCreator);
+  Command *ModCreator() { return (new Mod()); }
+  bool modCmd =
+      Interpreter::GetInstance().registerCreator("mod", ModCreator());
 
-Command *WriteDotCreator(std::string::iterator &it,
-                         const std::string::iterator &end) {
-  return new WriteDot();
-}
-bool writeDotCmd =
-    Interpreter::getInstance().registerCreator(".", WriteDotCreator);
+  Command *DupCreator() { return (new Dup()); }
+  bool dupCmd =
+      Interpreter::GetInstance().registerCreator("dup", DupCreator());
 
-Command *SwapCreator(std::string::iterator &it,
-                     const std::string::iterator &end) {
-  return new Swap();
-}
-bool swapCmd =
-    Interpreter::getInstance().registerCreator("swap", SwapCreator);
+  Command *DropCreator() { return new Drop(); }
+  bool dropCmd =
+      Interpreter::GetInstance().registerCreator("drop", DropCreator());
 
-Command *RotCreator(std::string::iterator &it,
-                    const std::string::iterator &end) {
-  return new Rot();
-}
-bool rotCmd =
-    Interpreter::getInstance().registerCreator("rot", RotCreator);
+  Command *WriteCreator() { return new Write(); }
+  bool writeCmd =
+      Interpreter::GetInstance().registerCreator(".", WriteCreator());
 
-Command *OverCreator(std::string::iterator &it,
-                     const std::string::iterator &end) {
-  return new Over();
-}
-bool overCmd =
-    Interpreter::getInstance().registerCreator("over", OverCreator);
+  Command *RotCreator() { return (new Rot()); }
+  bool rotCmd =
+      Interpreter::GetInstance().registerCreator("rot", RotCreator());
 
-Command *EmitCreator(std::string::iterator &it,
-                     const std::string::iterator &end) {
-  return new Emit();
-}
-bool emitCmd =
-    Interpreter::getInstance().registerCreator("emit", EmitCreator);
+  Command *OverCreator() { return (new Over()); }
+  bool overCmd =
+      Interpreter::GetInstance().registerCreator("over", OverCreator());
 
-Command *CRCreator(std::string::iterator &it,
-                   const std::string::iterator &end) {
-  return new CR();
-}
-bool crCmd =
-    Interpreter::getInstance().registerCreator("cr", CRCreator);
+  Command *EmitCreator() { return (new Emit()); }
+  bool emitCmd =
+      Interpreter::GetInstance().registerCreator("emit", EmitCreator());
 
-Command *GreaterCreator(std::string::iterator &it,
-                        const std::string::iterator &end) {
-  return new Over();
-}
-bool greaterCmd =
-    Interpreter::getInstance().registerCreator(">", GreaterCreator);
+  Command *CRCreator() { return (new CR()); }
+  bool crCmd =
+      Interpreter::GetInstance().registerCreator("cr", CRCreator());
 
-Command *LessCreator(std::string::iterator &it,
-                     const std::string::iterator &end) {
-  return new Over();
-}
-bool lessCmd =
-    Interpreter::getInstance().registerCreator("<", LessCreator);
+  Command *GreaterCreator() { return (new Greater()); }
+  bool greaterCmd =
+      Interpreter::GetInstance().registerCreator(">", GreaterCreator());
 
-Command *EqualCreator(std::string::iterator &it,
-                      const std::string::iterator &end) {
-  return new Over();
-}
+  Command *LessCreator() { return (new Less()); }
+  bool lessCmd =
+      Interpreter::GetInstance().registerCreator("<", LessCreator());
+
+  Command *EqualCreator() { return (new Equal()); }
+  bool equalCmd =
+      Interpreter::GetInstance().registerCreator("=", EqualCreator());
 
 } // namespace

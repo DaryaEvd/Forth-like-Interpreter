@@ -1,14 +1,20 @@
+#include <iostream>
+
 #include "commands.hpp"
 #include "interpreter.hpp"
 
-int main() {
-  Interpreter &interpreter = Interpreter::getInstance();
-  std::string expr;
-  while (true) {
+int main(){
+  Interpreter &i = Interpreter::GetInstance();
+  Context context;
+
+  while (true){
+    context.ssOutput.str(std::string());
+    context.inputStr = "";
     std::cout << "> ";
-    std::getline(std::cin, expr);
-    // std::cout << interpreter.Interpret(expr.begin(), expr.end()) << std::endl;  
-    interpreter.Interpret(expr);
+    std::getline(std::cin, context.inputStr);
+    i.Interpret(context);
+    std::cout << context.ssOutput.str();
   }
+
   return 0;
 }

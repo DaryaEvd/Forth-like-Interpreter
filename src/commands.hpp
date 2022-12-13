@@ -1,214 +1,265 @@
 #pragma once
 
+#include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #include "interpretererror.hpp"
 #include "mystack.hpp"
 
+struct Context {
+  std::string inputStr;
+  std::stringstream ssOutput;
+  MyStack stackCntxt;
+};
+
 class Command {
-  public:
-  virtual void apply(MyStack &stk_) = 0;
-  virtual ~Command(){};
+public:
+  virtual void apply(Context &cont) = 0;
+  virtual ~Command() {}
 };
 
-// makes an addition of two top numbers and puts the result on the top
+// makes an addition of two top numbers, removes them from the stack and puts
+// the result on the top
 class Add : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.top();
-    int second = stk_.top();
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
     int sum = first + second;
-    stk_.push(sum);
+    cont.stackCntxt.push(sum);
   }
 };
 
-// makes a subtraction of two top numbers and puts the result on the
-// top
+// makes a subtraction of two top numbers, removes them from the stack and puts
+// the result on the top
 class Sub : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.top();
-    int second = stk_.top();
-    int sub = first - second;
-    stk_.push(sub);
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int sub = second - first;
+    cont.stackCntxt.push(sub);
   }
 };
 
-// makes a multiplication of two top numbers and puts the result on
-// the top
-class Mul : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+// makes a multiplication of two top numbers, removes them from the stack and puts
+// the result on the top
+class Mult : public Command {
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.top();
-    int second = stk_.top();
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
     int mul = first * second;
-    stk_.push(mul);
+    cont.stackCntxt.push(mul);
   }
 };
 
-// makes a division of two top numbers and puts the result on the top
+// makes a division of two top numbers, removes them from the stack and puts
+// the result on the top
 class Div : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.top();
-    int second = stk_.top();
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
     if (second == 0) {
-      throw interpreterError("division by zero");
+      throw InterpreterError("Error: division by zero");
     }
-    int sub = first / second;
-    stk_.push(sub);
+    cont.stackCntxt.pop();
+
+    int div = second / first;
+    cont.stackCntxt.push(div);
   }
 };
 
-// counts a remainder of the division of two top numbers and puts the
+// counts a remainder of the division of two top numbers, removes them from the stack and puts the
 // result on the top
 class Mod : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.top();
-    int second = stk_.top();
-    int result = first % second;
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    if (second == 0) {
+      throw InterpreterError("Error: division by zero");
+    }
+    cont.stackCntxt.pop();
+
+    int mod = second % first;
+    cont.stackCntxt.push(mod);
   }
 };
 
-// copies top of stack and puts it on stack
+// copies top number and put a copy on stack over top
 class Dup : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    int copyOfTop = stk_.peek();
-    stk_.push(copyOfTop);
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.empty()) {
+      throw InterpreterError("Too few arguments on stack");
+    }
+    int copyTop = cont.stackCntxt.top();
+    cont.stackCntxt.push(copyTop);
   }
 };
 
-// removes top of stack
+// removes top number from the stack
 class Drop : public Command {
-  public:
-  void apply(MyStack &stk_) override { stk_.pop(); }
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.empty()) {
+      throw InterpreterError("Too few arguments on stack");
+    }
+    cont.stackCntxt.pop();
+  }
 };
 
 // writes the top of stack and removes it from stack
-class WriteDot : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    int topOfStack = stk_.top();
-    std::cout << topOfStack << std::endl;
-    stk_.pop();
-  }
-};
+class Write : public Command {
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.empty()) {
+      throw InterpreterError("Too few arguments on stack");
+    }
 
-// switches the order of the top two numbers on stack
-class Swap : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    int topOfStack = stk_.top();
-    int afterTop = stk_.top();
-
-    stk_.push(topOfStack);
-    stk_.push(afterTop);
+    int topNum = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+    cont.ssOutput << topNum << "\n";
   }
 };
 
 // rotates the third number in stack to top
 class Rot : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 3) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 3) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.top();
-    int second = stk_.top();
-    int third = stk_.top();
 
-    stk_.push(first);
-    stk_.push(third);
-    stk_.push(second);
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int third = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    cont.stackCntxt.push(first);
+    cont.stackCntxt.push(second);
+    cont.stackCntxt.push(third);
   }
 };
 
-// copies the second number and puts it to top
+// copies the second number and puts it over the top
 class Over : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    int first = stk_.top();
-    int second = stk_.peek();
+public:
+  void apply(Context &cont) {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
+    }
 
-    stk_.push(first);
-    stk_.push(second);
+    int firstCopy = cont.stackCntxt.top();
+    cont.stackCntxt.push(firstCopy);
   }
 };
 
-// prints top number's ascii code and remove it from stack
+// prints top number's ascii code and remove top number from stack
 class Emit : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    int topOfStack = stk_.peek();
-    // if ((topOfStack + '0') < 0 || (topOfStack + '0') > 255) {
-    //   throw interpreterError("No ascii code");
-    // }
-    std::cout << (topOfStack + '0') << std::endl;
-    stk_.pop();
+public:
+  void apply(Context &cont) override {
+    if (cont.stackCntxt.empty()) {
+      throw InterpreterError("Too few arguments on stack");
+    }
+
+    int topStack = cont.stackCntxt.top();
+    if ((topStack + '0' < 0) || (topStack + '0' > 255)) {
+      throw InterpreterError("Out of ASCII code");
+    }
+
+    cont.ssOutput << topStack - '0' << " ";
+    cont.stackCntxt.pop();
   }
 };
 
 // writes line break
 class CR : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    std::cout << "\n" << std::endl;
-  }
+public:
+  void apply(Context &cont) override { cont.ssOutput << "\n"; }
 };
 
-// logic operation '>' : if the first number on stack is greater than
-// the second, push 1 on stack, otherwise push 0
+// logic operation '>' : if the second number on stack is greater than
+// the top, push 1 on stack, otherwise push 0
 class Greater : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) override {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.peek();
-    int second = stk_.peek();
+
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
     if (first > second) {
-      std::cout << 1 << std::endl;
-      stk_.push(1);
+      cont.stackCntxt.push(1);
     } else {
-      std::cout << 0 << std::endl;
-      stk_.push(0);
+      cont.stackCntxt.push(0);
     }
   }
 };
 
-// logic operation '<' : if the first number on stack is less than the
-// second, push 1 on stack, otherwise push 0
+// logic operation '<' : if the second number on stack is less than
+// the top, push 1 on stack, otherwise push 0
 class Less : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) override {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.peek();
-    int second = stk_.peek();
+
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
     if (first < second) {
-      std::cout << 1 << std::endl;
-      stk_.push(1);
+      cont.stackCntxt.push(1);
     } else {
-      std::cout << 0 << std::endl;
-      stk_.push(0);
+      cont.stackCntxt.push(0);
     }
   }
 };
@@ -216,19 +267,23 @@ class Less : public Command {
 // logic operation '=' : if the first and second numbers on stack are
 // equals, push 1 on stack, otherwise push 0
 class Equal : public Command {
-  public:
-  void apply(MyStack &stk_) override {
-    if (stk_.size() < 2) {
-      throw interpreterError("too few arguments on stack");
+public:
+  void apply(Context &cont) override {
+    if (cont.stackCntxt.size() < 2) {
+      throw InterpreterError("Too few arguments on stack");
     }
-    int first = stk_.peek();
-    int second = stk_.peek();
+
+    int first = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
+    int second = cont.stackCntxt.top();
+    cont.stackCntxt.pop();
+
     if (first == second) {
-      std::cout << 1 << std::endl;
-      stk_.push(1);
+      cont.stackCntxt.push(1);
     } else {
-      std::cout << 0 << std::endl;
-      stk_.push(0);
+      cont.stackCntxt.push(0);
     }
   }
 };
+ 
