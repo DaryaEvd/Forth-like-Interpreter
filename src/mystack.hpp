@@ -1,36 +1,17 @@
 #pragma once
 #include <stack>
 
-#include "interpretererror.hpp"
-
 class MyStack{
   public:
-    size_t size() const {
-      return mystk_.size();
-    }
+    size_t size() const;
 
-    bool empty() const {
-      return mystk_.empty();
-    }
+    bool empty() const;
     
-    int top() {
-      if(mystk_.empty()){
-        throw InterpreterError("Too few arguments on stack");
-      }
-      return mystk_.top();
-    }
+    int top();
 
-    // CR: void -> int
-    void pop() {
-      if(mystk_.empty()){
-        throw InterpreterError("Too few arguments on stack");
-      }
-      mystk_.pop();
-    }
+    int pop();
 
-    void push(int toPush) {
-      mystk_.push(toPush);
-    }
+    void push(int toPush);
 
   private:
     std::stack<int> mystk_;

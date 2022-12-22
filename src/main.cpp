@@ -2,20 +2,22 @@
 
 #include "commands.hpp"
 #include "interpreter.hpp"
+#include <sstream>
 
 int main(){
   Interpreter &i = Interpreter::GetInstance();
-  Context context;
-
-  while (true){
-    context.ssOutput.str(std::string());
-    context.inputStr = "";
+  
+  while (true) {
+    std::string input = "";
     std::cout << "> ";
-    std::getline(std::cin, context.inputStr);
-    // CR: create context inside interpret
-    // CR: interpret(const std::string::iterator begin, const std::string::iterator end) -> std::string
-    i.Interpret(context);
-    std::cout << context.ssOutput.str();
+    std::getline(std::cin, input);
+
+    // for tests better not iterators but a string
+    // const std::string::iterator &begin = input.begin();
+    // const std::string::iterator &end = input.end();
+    // std::cout << i.Interpret(begin, end) << std::endl;
+
+    std::cout << i.Interpret(input) << std::endl;
   }
 
   return 0;
