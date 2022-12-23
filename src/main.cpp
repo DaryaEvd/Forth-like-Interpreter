@@ -12,11 +12,6 @@ int main(){
     std::cout << "> ";
     std::getline(std::cin, input);
 
-    // for tests better not iterators
-    // const std::string::iterator &begin = input.begin();
-    // const std::string::iterator &end = input.end();
-    // std::cout << i.Interpret(begin, end) << std::endl;
-
     std::cout << i.interpret(input) << std::endl;
   }
 

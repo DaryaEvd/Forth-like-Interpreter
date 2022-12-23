@@ -6,21 +6,13 @@
 
 struct Context {
   MyStack &stackCntxt;
-  // const std::string::iterator &beginCnt;
+  std::string::iterator &it;
   const std::string::iterator &endCnt;
   std::stringstream ssOutput;
 
-  std::string::iterator &it;
-
-  // Context(MyStack &stackCntxt, const std::string::iterator
-  // &beginCnt,
-  //         const std::string::iterator &endCnt)
-  //     : stackCntxt(stackCntxt), beginCnt(beginCnt), endCnt(endCnt),
-  //     it(it) {}
-
-  Context(MyStack &stackCntxt, const std::string::iterator &endCnt,
-          std::string::iterator &it)
-      : stackCntxt(stackCntxt), endCnt(endCnt), it(it) {}
+  Context(MyStack &stackCntxt, std::string::iterator &it,
+          const std::string::iterator &endCnt)
+      : stackCntxt(stackCntxt), it(it), endCnt(endCnt) {}
 };
 
 class Command {
@@ -111,7 +103,7 @@ public:
   void apply(Context &cont) override;
 };
 
-// prints top number's ascii code and remove top number from stack
+// prints top number's ascii code and removes top number from stack
 class Emit : public Command {
 public:
   void apply(Context &cont) override;

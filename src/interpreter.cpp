@@ -33,13 +33,10 @@ bool Interpreter::isNumber(std::string &prefix) {
 }
 
 std::string Interpreter::interpret(std::string input) {
-  // const std::string::iterator &begin = input.begin();
-  const std::string::iterator &end = input.end();
   std::string::iterator it = input.begin();
-
-  Context cont(stk_, end, it);
-
-  // auto it = begin;
+  const std::string::iterator &end = input.end();
+  
+  Context cont(stk_, it, end);
 
   try {
     while (it != end) {
@@ -47,7 +44,6 @@ std::string Interpreter::interpret(std::string input) {
         it++;
         continue;
       }
-      // std::cout << "it:"<< *it << std::endl;
       if (it == end) {
         break;
       }
@@ -56,38 +52,20 @@ std::string Interpreter::interpret(std::string input) {
       auto isSpaceCheck = [](char i) { return std::isspace(i); };
       std::string::iterator spaceIter =
           std::find_if(it, end, isSpaceCheck);
-      // std::cout << "sp it:" << *spaceIter << ";" << std::endl;
       it = spaceIter;
 
       std::string prefix(firstNonSpace, spaceIter);
-      // std::string prefix(firstNonSpace, it);
-
-      // std::cout << "prefix :" << prefix << ";" << std::endl;
       if (isNumber(prefix)) {
-        // std::cout << "num" << std::endl;
         cont.stackCntxt.push(std::stoi(prefix));
       }
 
       else {
-        // std::cout << "prefix:" << prefix << std::endl;
-        // std::cout << "from cmd" << std::endl;
         auto commandIter = creatorsCmds_.find(prefix);
         if (commandIter == creatorsCmds_.end()) {
-          // std::cout << "this cmd not found:" << prefix <<
-          // std::endl;
-          throw InterpreterError("such command not found");
+          throw InterpreterError("Such command not found");
         }
         (commandIter->second)->apply(cont);
-        // std::cout << "after applying" << std::endl;
-        // break;  //with breaks works
-        // continue;
-
-        // it = cont.it;
-        // cont.it = it;
-
       }
-
-      // std::cout << "i am here after " << std::endl;
 
       if (it == end) {
         break;
@@ -98,7 +76,7 @@ std::string Interpreter::interpret(std::string input) {
     cont.ssOutput << e.what() << "\n";
     return cont.ssOutput.str();
   } catch (std::out_of_range) {
-    cont.ssOutput << "out of bounds of int \n";
+    cont.ssOutput << "Out of bounds of int \n";
     return cont.ssOutput.str();
   }
 
