@@ -135,34 +135,64 @@ void Equal::apply(Context &cont) {
 };
 
 void BetweenQuotes::apply(Context &cont) {
-  auto it = cont.beginCnt;
 
-  while (it != cont.endCnt) {
-    while (std::isspace(*it)) {
-      it++;
+  // std::cout << "before while: " << *(cont.it) << ";" << std::endl;
+  if (cont.it == cont.endCnt) {
+    // std::cout << "from forst if" << std::endl;
+    throw InterpreterError("incorrect input");
+  }
+  while (cont.it != cont.endCnt) {
+    // std::cout << "cont.it:" << *(cont.it) << std::endl;
+    // std::cout << "cont.it + 1:" << *(cont.it + 1) << std::endl;
+    // while (std::isspace(*cont.it)) {
+    //   cont.it++;
+    // }
+    // if (*cont.it == '.' && *(cont.it + 1) == '\"') {
+    //   cont.it = cont.it + 2; //skip . and "
+    //   std::cout << "dot qoute" << std::endl;
+    // }
+    // std::cout << "after jumping: " << *(cont.it) << ";" <<
+    // std::endl;
+    if (!std::isspace(*(cont.it))) {
+      //std::cout << "!isspace:" << *cont.it << std::endl;
+      throw InterpreterError("no closing quote");
     }
-    if (*it == '.' && *(it + 1) == '\"') {
-      it = it + 2; //skip . and "
-    }
-    if (!std::isspace(*it)) {
-      throw InterpreterError("incorrect input");
-    }
-    it++;
-    auto firstSymbol = it;
+    cont.it++;
+    auto firstSymbol = cont.it;
 
     auto isQuote = [](char i) { return i == '\"'; };
     std::string::iterator quoteIter =
-        std::find_if(it, cont.endCnt, isQuote);
+        std::find_if(cont.it, cont.endCnt, isQuote);
+   
     if (quoteIter == cont.endCnt) {
+      // std::cout << "quoteIter == cont.endCnt:" << *cont.it
+      //           << std::endl;
       throw InterpreterError("no closing quote");
     }
     std::string toPrint(firstSymbol, quoteIter);
     cont.ssOutput << toPrint << '\n';
 
-    it = ++quoteIter;
-    if (it == cont.endCnt) {
-      break;
-    }
-    it++;
+    cont.it = quoteIter;
+    break;
+
+    // 1 2 + ." esrewp" 3 4 + .
+    // std::cout << "cont.endCnt before ==" << *cont.endCnt << ";"
+    //           << std::endl;
+    // std::cout << "quoteIter before ==" << *quoteIter << ";"
+    //           << std::endl;
+    // if (quoteIter == cont.endCnt) {
+    //   std::cout << "quoteIter == cont.endCnt:" << *cont.it <<
+    //   std::endl; throw InterpreterError("no closing quote");
+    // }
+    // std::string toPrint(firstSymbol, quoteIter);
+    // cont.ssOutput << toPrint << '\n';
+
+    // cont.it = quoteIter + 1;
+
+    // if (cont.it == cont.endCnt) {
+    //   std::cout << "hello from break" << std::endl;
+    //   break;
+    // }
+    // cont.it++;
   }
 };

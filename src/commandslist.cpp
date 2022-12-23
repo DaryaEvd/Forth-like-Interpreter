@@ -4,39 +4,39 @@
 #include "interpreter.hpp"
 
 namespace {
-  bool addCmd = Interpreter::GetInstance().RegisterCreator(
+  bool addCmd = Interpreter::getInstance().registerCreator(
     "+", std::make_unique<Add>());
-  bool subCmd = Interpreter::GetInstance().RegisterCreator(
+  bool subCmd = Interpreter::getInstance().registerCreator(
     "-", std::make_unique<Sub>());
-  bool multCmd = Interpreter::GetInstance().RegisterCreator(
+  bool multCmd = Interpreter::getInstance().registerCreator(
     "*", std::make_unique<Mult>());
-  bool divCmd = Interpreter:: GetInstance().RegisterCreator(
+  bool divCmd = Interpreter:: getInstance().registerCreator(
     "/", std::make_unique<Div>());
-  bool modCmd = Interpreter:: GetInstance().RegisterCreator(
+  bool modCmd = Interpreter:: getInstance().registerCreator(
     "mod", std::make_unique<Mod>());
-  bool dupCmd = Interpreter::GetInstance().RegisterCreator(
+  bool dupCmd = Interpreter::getInstance().registerCreator(
     "dup", std::make_unique<Dup>());
-  bool dropCmd = Interpreter::GetInstance().RegisterCreator(
+  bool dropCmd = Interpreter::getInstance().registerCreator(
     "drop", std::make_unique<Drop>());
-  bool writeCmd = Interpreter::GetInstance().RegisterCreator(
+  bool writeCmd = Interpreter::getInstance().registerCreator(
     ".", std::make_unique<Write>());
-  bool swapCmd = Interpreter::GetInstance().RegisterCreator(
+  bool swapCmd = Interpreter::getInstance().registerCreator(
     "swap", std::make_unique<Swap>());
-  bool rotCmd =Interpreter::GetInstance().RegisterCreator(
+  bool rotCmd =Interpreter::getInstance().registerCreator(
     "rot", std::make_unique<Rot>());
-  bool overCmd = Interpreter:: GetInstance().RegisterCreator(
+  bool overCmd = Interpreter:: getInstance().registerCreator(
     "over", std::make_unique<Over>());
-  bool emitCmd = Interpreter:: GetInstance().RegisterCreator(
+  bool emitCmd = Interpreter:: getInstance().registerCreator(
     "emit", std::make_unique<Emit>());
-  bool CRCmd =Interpreter::GetInstance().RegisterCreator(
+  bool CRCmd =Interpreter::getInstance().registerCreator(
     "cr", std::make_unique<CR>());
-  bool greaterCmd = Interpreter::GetInstance().RegisterCreator(
+  bool greaterCmd = Interpreter::getInstance().registerCreator(
     ">", std::make_unique<Greater>());
-  bool lessCmd = Interpreter::GetInstance().RegisterCreator(
+  bool lessCmd = Interpreter::getInstance().registerCreator(
     "<", std::make_unique<Less>());
-  bool equalCmd = Interpreter::GetInstance().RegisterCreator(
+  bool equalCmd = Interpreter::getInstance().registerCreator(
     "=", std::make_unique<Equal>());
-  bool printQuotes = Interpreter::GetInstance().RegisterCreator(
+  bool printQuotes = Interpreter::getInstance().registerCreator(
     ".\"", std::make_unique<BetweenQuotes>());
   
 } // namespace

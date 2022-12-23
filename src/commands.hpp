@@ -6,13 +6,21 @@
 
 struct Context {
   MyStack &stackCntxt;
-  const std::string::iterator &beginCnt;
+  // const std::string::iterator &beginCnt;
   const std::string::iterator &endCnt;
   std::stringstream ssOutput;
 
-  Context(MyStack &stackCntxt, const std::string::iterator &beginCnt,
-          const std::string::iterator &endCnt)
-      : stackCntxt(stackCntxt), beginCnt(beginCnt), endCnt(endCnt) {}
+  std::string::iterator &it;
+
+  // Context(MyStack &stackCntxt, const std::string::iterator
+  // &beginCnt,
+  //         const std::string::iterator &endCnt)
+  //     : stackCntxt(stackCntxt), beginCnt(beginCnt), endCnt(endCnt),
+  //     it(it) {}
+
+  Context(MyStack &stackCntxt, const std::string::iterator &endCnt,
+          std::string::iterator &it)
+      : stackCntxt(stackCntxt), endCnt(endCnt), it(it) {}
 };
 
 class Command {

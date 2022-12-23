@@ -5,7 +5,7 @@
 #include "interpreter.hpp"
 #include "interpretererror.hpp"
 
-bool Interpreter::IsNumber(std::string &prefix) {
+bool Interpreter::isNumber(std::string &prefix) {
   const std::string::iterator &begin = prefix.begin();
   const std::string::iterator &end = prefix.end();
 
@@ -32,13 +32,14 @@ bool Interpreter::IsNumber(std::string &prefix) {
   return false;
 }
 
-std::string Interpreter::Interpret(std::string input) {
-  const std::string::iterator &begin = input.begin();
+std::string Interpreter::interpret(std::string input) {
+  // const std::string::iterator &begin = input.begin();
   const std::string::iterator &end = input.end();
+  std::string::iterator it = input.begin();
 
-  Context cont(stk_, begin, end);
+  Context cont(stk_, end, it);
 
-  auto it = begin;
+  // auto it = begin;
 
   try {
     while (it != end) {
@@ -62,7 +63,7 @@ std::string Interpreter::Interpret(std::string input) {
       // std::string prefix(firstNonSpace, it);
 
       // std::cout << "prefix :" << prefix << ";" << std::endl;
-      if (IsNumber(prefix)) {
+      if (isNumber(prefix)) {
         // std::cout << "num" << std::endl;
         cont.stackCntxt.push(std::stoi(prefix));
       }
@@ -79,7 +80,11 @@ std::string Interpreter::Interpret(std::string input) {
         (commandIter->second)->apply(cont);
         // std::cout << "after applying" << std::endl;
         // break;  //with breaks works
-        continue;
+        // continue;
+
+        // it = cont.it;
+        // cont.it = it;
+
       }
 
       // std::cout << "i am here after " << std::endl;

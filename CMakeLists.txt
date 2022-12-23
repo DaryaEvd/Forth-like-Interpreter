@@ -12,36 +12,35 @@ add_executable(src
         src/mystack.cpp
         )
 
-# add_executable(tests
-#         src/testsforth.cpp
-#         src/commandslist.cpp
-#         src/commands.cpp
-#         src/interpreter.cpp
-#         src/mystack.cpp
-#         )
+add_executable(tests
+        src/testsforth.cpp
+        src/commandslist.cpp
+        src/commands.cpp
+        src/interpreter.cpp
+        src/mystack.cpp
+        )
 
-# include(FetchContent)
-# FetchContent_Declare(
-#         googletest
-#         GIT_REPOSITORY https://github.com/google/googletest.git
-#         GIT_TAG release-1.12.1
-# )
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.12.1
+)
 
 SET(WARN_FLAGS "-Wall -Wpedantic -Wextra")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARN_FLAGS} ${ASAN_OPTIONS}") 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
 
-# #For Windows: Prevent overriding the parent project's compiler/linker settings
-# set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-# FetchContent_MakeAvailable(googletest)
+#For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
          
-# enable_testing()
+enable_testing()
 
-# target_link_libraries(
-#         tests
-#         GTest::gtest_main
-# )
+target_link_libraries(
+        tests
+        GTest::gtest_main
+)
 
-# include(GoogleTest)
-# gtest_discover_tests(tests)
-
+include(GoogleTest)
+gtest_discover_tests(tests)
