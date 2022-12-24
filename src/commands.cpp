@@ -5,9 +5,7 @@
 #include "interpretererror.hpp"
 
 void BinaryOp::apply(Context &cont) {
-  if (cont.stackCntxt.empty()) {
-    throw InterpreterError("Too few arguments on stack");
-  }
+    // CR: add size check / remove size check in other places
   int first = cont.stackCntxt.pop();
   int second = cont.stackCntxt.pop();
   cont.stackCntxt.push(this->makeBinOp(first, second));
@@ -42,16 +40,10 @@ void Dup::apply(Context &cont) {
 }
 
 void Drop::apply(Context &cont) {
-  if (cont.stackCntxt.empty()) {
-    throw InterpreterError("Too few arguments on stack");
-  }
   cont.stackCntxt.pop();
 }
 
 void Write::apply(Context &cont) {
-  if (cont.stackCntxt.empty()) {
-    throw InterpreterError("Too few arguments on stack");
-  }
   int topNum = cont.stackCntxt.pop();
   cont.ssOutput << topNum << "\n";
 }
@@ -97,7 +89,7 @@ void Emit::apply(Context &cont) {
   }
 
   int topStack = cont.stackCntxt.pop();
-  if ((char(topStack) < 0) || (char(topStack) > 128)) {
+  if (topStack < 0 || topStack > 128) {
     throw InterpreterError("Out of ASCII code");
   }
 
@@ -143,7 +135,6 @@ void BetweenQuotes::apply(Context &cont) {
   if (cont.it == cont.endCnt) {
     throw InterpreterError("Incorrect input");
   }
-  while (cont.it != cont.endCnt) {
     if (!std::isspace(*(cont.it))) {
       throw InterpreterError("No closing quote");
     }
@@ -161,6 +152,4 @@ void BetweenQuotes::apply(Context &cont) {
     cont.ssOutput << toPrint << '\n';
 
     cont.it = quoteIter;
-    break;
-  }
 }

@@ -18,7 +18,7 @@ struct Context {
 class Command {
 public:
   virtual void apply(Context &cont) = 0;
-  virtual ~Command() {}
+  virtual ~Command() = default;
 };
 
 class BinaryOp : public Command {

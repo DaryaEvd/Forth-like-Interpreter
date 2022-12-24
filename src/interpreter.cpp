@@ -9,6 +9,10 @@ bool Interpreter::isNumber(std::string &prefix) {
   const std::string::iterator &begin = prefix.begin();
   const std::string::iterator &end = prefix.end();
 
+  // 1. - => next
+  // 2. has at least one symbol
+  // 3. all of the symbol are digit
+
   auto it = begin;
   if (*it == '-' && (std::isdigit(*(it + 1)))) {
     std::string negativeNum(it + 1, end);
@@ -41,8 +45,7 @@ std::string Interpreter::interpret(std::string input) {
     while (it != end) {
       while (std::isspace(*it)) {
         it++;
-        continue;
-      }
+     }
       if (it == end) {
         break;
       }
@@ -55,6 +58,7 @@ std::string Interpreter::interpret(std::string input) {
 
       std::string prefix(firstNonSpace, spaceIter);
       if (isNumber(prefix)) {
+          // CR: try catch only for stoi
         cont.stackCntxt.push(std::stoi(prefix));
       }
 
@@ -74,7 +78,7 @@ std::string Interpreter::interpret(std::string input) {
   } catch (InterpreterError &e) {
     cont.ssOutput << e.what() << "\n";
     return cont.ssOutput.str();
-  } catch (std::out_of_range) {
+  } catch (std::out_of_range &) {
     cont.ssOutput << "Out of bounds of int \n";
     return cont.ssOutput.str();
   }

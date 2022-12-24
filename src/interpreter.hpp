@@ -17,6 +17,7 @@ public:
 
   bool registerCreator(std::string &&strCmd,
                        std::unique_ptr<Command> &&cmd) {
+      // CR: assert(find == end()); write to map
     assert(creatorsCmds_[strCmd] = std::move(cmd));
     return true;
   }
