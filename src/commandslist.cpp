@@ -39,4 +39,4 @@ namespace {
   bool printQuotes = Interpreter::getInstance().registerCreator(
     ".\"", std::make_unique<BetweenQuotes>());
   
-} // namespace
+}

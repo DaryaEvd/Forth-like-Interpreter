@@ -5,7 +5,11 @@
 #include "interpretererror.hpp"
 
 void BinaryOp::apply(Context &cont) {
-    // CR: add size check / remove size check in other places
+  // CR: add size check / remove size check in other places DONE
+  if (cont.stackCntxt.size() < 2) {
+    throw InterpreterError("Too few arguments on stack");
+  }
+
   int first = cont.stackCntxt.pop();
   int second = cont.stackCntxt.pop();
   cont.stackCntxt.push(this->makeBinOp(first, second));
@@ -21,6 +25,7 @@ int Div::makeBinOp(int first, int second) {
   if (first == 0) {
     throw InterpreterError("Error: division by zero");
   }
+
   return second / first;
 }
 
@@ -28,6 +33,7 @@ int Mod::makeBinOp(int first, int second) {
   if (first == 0) {
     throw InterpreterError("Error: division by zero");
   }
+
   return second % first;
 }
 
@@ -35,15 +41,24 @@ void Dup::apply(Context &cont) {
   if (cont.stackCntxt.empty()) {
     throw InterpreterError("Too few arguments on stack");
   }
+
   int copyTop = cont.stackCntxt.top();
   cont.stackCntxt.push(copyTop);
 }
 
 void Drop::apply(Context &cont) {
+  if (cont.stackCntxt.empty()) {
+    throw InterpreterError("Too few arguments on stack");
+  }
+
   cont.stackCntxt.pop();
 }
 
 void Write::apply(Context &cont) {
+  if (cont.stackCntxt.empty()) {
+    throw InterpreterError("Too few arguments on stack");
+  }
+
   int topNum = cont.stackCntxt.pop();
   cont.ssOutput << topNum << "\n";
 }
@@ -52,6 +67,7 @@ void Swap::apply(Context &cont) {
   if (cont.stackCntxt.size() < 2) {
     throw InterpreterError("Too few arguments on stack");
   }
+
   int fisrt = cont.stackCntxt.pop();
   int second = cont.stackCntxt.pop();
 
@@ -63,6 +79,7 @@ void Rot::apply(Context &cont) {
   if (cont.stackCntxt.size() < 3) {
     throw InterpreterError("Too few arguments on stack");
   }
+
   int first = cont.stackCntxt.pop();
   int second = cont.stackCntxt.pop();
   int third = cont.stackCntxt.pop();
@@ -135,21 +152,22 @@ void BetweenQuotes::apply(Context &cont) {
   if (cont.it == cont.endCnt) {
     throw InterpreterError("Incorrect input");
   }
-    if (!std::isspace(*(cont.it))) {
-      throw InterpreterError("No closing quote");
-    }
-    cont.it++;
-    auto firstSymbol = cont.it;
 
-    auto isQuote = [](char i) { return i == '\"'; };
-    std::string::iterator quoteIter =
-        std::find_if(cont.it, cont.endCnt, isQuote);
+  if (!std::isspace(*(cont.it))) {
+    throw InterpreterError("No closing quote");
+  }
+  cont.it++;
+  auto firstSymbol = cont.it;
 
-    if (quoteIter == cont.endCnt) {
-      throw InterpreterError("No closing quote");
-    }
-    std::string toPrint(firstSymbol, quoteIter);
-    cont.ssOutput << toPrint << '\n';
+  auto isQuote = [](char i) { return i == '\"'; };
+  std::string::iterator quoteIter =
+      std::find_if(cont.it, cont.endCnt, isQuote);
 
-    cont.it = quoteIter;
+  if (quoteIter == cont.endCnt) {
+    throw InterpreterError("No closing quote");
+  }
+  std::string toPrint(firstSymbol, quoteIter);
+  cont.ssOutput << toPrint << '\n';
+
+  cont.it = quoteIter;
 }

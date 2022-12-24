@@ -24,7 +24,6 @@ public:
 class BinaryOp : public Command {
   void apply(Context &cont) override;
 
-  // virtual int operator()(int a, int b) = 0;
   virtual int makeBinOp(int num1, int num2) = 0;
 };
 

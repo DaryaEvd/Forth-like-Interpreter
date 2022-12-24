@@ -4,13 +4,12 @@
 class MyStack{
   public:
     size_t size() const;
-
     bool empty() const;
-    
+
     int top();
 
     int pop();
-
+    
     void push(int toPush);
 
   private:

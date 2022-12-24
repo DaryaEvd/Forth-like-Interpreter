@@ -9,30 +9,14 @@ bool Interpreter::isNumber(std::string &prefix) {
   const std::string::iterator &begin = prefix.begin();
   const std::string::iterator &end = prefix.end();
 
-  // 1. - => next
-  // 2. has at least one symbol
-  // 3. all of the symbol are digit
-
   auto it = begin;
-  if (*it == '-' && (std::isdigit(*(it + 1)))) {
-    std::string negativeNum(it + 1, end);
-    for (char &symbol : negativeNum) {
-      if (!std::isdigit(symbol)) {
-        return false;
-      }
+  if (*it == '-') {
+    if (prefix.size() == 1) {
+      return false;
     }
-    return true;
-  } else if (std::isdigit(*it)) {
-    std::string positiveNum(it, end);
-    for (char &symbol : positiveNum) {
-      if (!std::isdigit(symbol)) {
-        return false;
-      }
-    }
-    return true;
+    it++;
   }
-
-  return false;
+  return std::all_of(it, end, ::isdigit);
 }
 
 std::string Interpreter::interpret(std::string input) {
@@ -45,7 +29,7 @@ std::string Interpreter::interpret(std::string input) {
     while (it != end) {
       while (std::isspace(*it)) {
         it++;
-     }
+      }
       if (it == end) {
         break;
       }
@@ -58,8 +42,12 @@ std::string Interpreter::interpret(std::string input) {
 
       std::string prefix(firstNonSpace, spaceIter);
       if (isNumber(prefix)) {
-          // CR: try catch only for stoi
-        cont.stackCntxt.push(std::stoi(prefix));
+        try {
+          cont.stackCntxt.push(std::stoi(prefix));
+        } catch (std::out_of_range &) {
+          cont.ssOutput << "Out of bounds of int \n";
+          return cont.ssOutput.str();
+        }
       }
 
       else {
@@ -77,9 +65,6 @@ std::string Interpreter::interpret(std::string input) {
     }
   } catch (InterpreterError &e) {
     cont.ssOutput << e.what() << "\n";
-    return cont.ssOutput.str();
-  } catch (std::out_of_range &) {
-    cont.ssOutput << "Out of bounds of int \n";
     return cont.ssOutput.str();
   }
 
