@@ -38,5 +38,4 @@ namespace {
     "=", std::make_unique<Equal>());
   bool printQuotes = Interpreter::getInstance().registerCreator(
     ".\"", std::make_unique<BetweenQuotes>());
-  
 }

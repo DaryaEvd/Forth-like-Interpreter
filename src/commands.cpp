@@ -5,7 +5,6 @@
 #include "interpretererror.hpp"
 
 void BinaryOp::apply(Context &cont) {
-  // CR: add size check / remove size check in other places DONE
   if (cont.stackCntxt.size() < 2) {
     throw InterpreterError("Too few arguments on stack");
   }
