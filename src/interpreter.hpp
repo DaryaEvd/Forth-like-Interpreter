@@ -14,7 +14,7 @@ public:
     static Interpreter i;
     return i;
   }
-  
+
   bool registerCreator(std::string &&strCmd,
                        std::unique_ptr<Command> &&cmd) {
     assert(creatorsCmds_[strCmd] = std::move(cmd));

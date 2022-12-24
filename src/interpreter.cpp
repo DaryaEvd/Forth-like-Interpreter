@@ -18,8 +18,7 @@ bool Interpreter::isNumber(std::string &prefix) {
       }
     }
     return true;
-  } 
-  else if (std::isdigit(*it)) {
+  } else if (std::isdigit(*it)) {
     std::string positiveNum(it, end);
     for (char &symbol : positiveNum) {
       if (!std::isdigit(symbol)) {
@@ -35,7 +34,7 @@ bool Interpreter::isNumber(std::string &prefix) {
 std::string Interpreter::interpret(std::string input) {
   std::string::iterator it = input.begin();
   const std::string::iterator &end = input.end();
-  
+
   Context cont(stk_, it, end);
 
   try {

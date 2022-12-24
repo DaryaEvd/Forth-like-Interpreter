@@ -78,7 +78,6 @@ void Rot::apply(Context &cont) {
   cont.stackCntxt.push(first);
   cont.stackCntxt.push(third);
   cont.stackCntxt.push(second);
-  
 }
 
 void Over::apply(Context &cont) {
@@ -154,7 +153,7 @@ void BetweenQuotes::apply(Context &cont) {
     auto isQuote = [](char i) { return i == '\"'; };
     std::string::iterator quoteIter =
         std::find_if(cont.it, cont.endCnt, isQuote);
-   
+
     if (quoteIter == cont.endCnt) {
       throw InterpreterError("No closing quote");
     }

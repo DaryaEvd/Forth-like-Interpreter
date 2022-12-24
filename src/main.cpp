@@ -1,12 +1,12 @@
 #include <iostream>
+#include <sstream>
 
 #include "commands.hpp"
 #include "interpreter.hpp"
-#include <sstream>
 
-int main(){
+int main() {
   Interpreter &i = Interpreter::getInstance();
-  
+
   while (true) {
     std::string input = "";
     std::cout << "> ";

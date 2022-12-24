@@ -115,6 +115,12 @@ TEST(BetweenQuotesCheck, IncorrectStart) {
   EXPECT_EQ(i.interpret(input), "Such command not found\n");
 }
 
+TEST(BetweenQuotesCheck, PrintSomeCmdStraight) {
+  Interpreter &i = Interpreter::getInstance();
+  std::string input = ".\" hello wo\"    .\" r l d.\"   .\" !     !       !\"";
+  EXPECT_EQ(i.interpret(input), "hello wo\nr l d.\n!     !       !\n");
+}
+
 TEST(CommandsCheck, CheckAdd) {
   Interpreter &i = Interpreter::getInstance();
   std::string input = "drop 1 2 +";
